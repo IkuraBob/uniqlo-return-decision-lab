@@ -12,3 +12,8 @@ For each handling scenario (Base / Downside / Upside), the page sizes the minimu
 - **Run locally:** open `index.html` in any browser (it works offline with no dependencies).
 
 *Student coursework. All figures are illustrative assumptions in HKD, not company data. Not affiliated with or endorsed by UNIQLO.*
+
+## AI contributors
+
+- **OpenAI ChatGPT / Codex (coordinator)**: project coordination, writing and implementation support, verification, and deployment.
+- **Claude (Anthropic)**: front-end design and implementation.
