@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Compare return-policy resource cost differences after checking store capacity."><meta name="color-scheme" content="light dark"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-42Ul6SmDY59ohEfER+biEqg6v9inEMDVXLk1GoU3V8g='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"><title>UNIQLO Decision Lab · v30</title>
+<style>
+:root{
+  --bg:#f5f3ee;--surface:#ffffff;--surface-2:#faf9f6;--sunken:#efece5;
+  --ink:#15171a;--ink-2:#3a3f45;--muted:#6b7077;--faint:#9a9ea4;
+  --line:#e4e0d7;--line-2:#d6d1c5;
+  --accent:#c8102e;--accent-soft:#fbe9ec;
+  --good:#16714d;--good-soft:#e5f3ec;--good-line:#b5dcc8;
+  --bad:#b4232f;--bad-soft:#fcebec;
+  --warn:#8a5a00;--warn-soft:#fbf1dc;
+  --bar:#c9c3b6;--bar-good:#2e8a63;--bar-bad:#d35a63;
+  --shadow:0 1px 2px rgba(20,20,20,.04),0 4px 16px rgba(20,20,20,.05);
+  --radius:14px;
+  --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Inter,"Helvetica Neue",Arial,sans-serif;
+  --serif:"Iowan Old Style","Charter","Palatino Linotype",Georgia,serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111315;--surface:#1a1d20;--surface-2:#16191c;--sunken:#22262a;
+  --ink:#f1f0ec;--ink-2:#cfd2d5;--muted:#9aa0a6;--faint:#6f757b;
+  --line:#2a2e33;--line-2:#363b41;
+  --accent:#ff4d5e;--accent-soft:#3a1a1f;
+  --good:#5fd19c;--good-soft:#16302a;--good-line:#24543f;
+  --bad:#ff7a83;--bad-soft:#3a1d20;
+  --warn:#f0b75a;--warn-soft:#352a14;
+  --bar:#3b4046;--bar-good:#3fae80;--bar-bad:#d1626b;
+  --shadow:0 1px 2px rgba(0,0,0,.3);
+}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:84px;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--sans);font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+h1,h2,h3,p{margin-top:0}
+a{color:inherit}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:6px}
+button{cursor:pointer;border:1px solid var(--line-2);background:var(--surface);border-radius:999px;padding:9px 18px;font-size:14px;font-weight:600;min-height:40px;transition:background .15s,border-color .15s,transform .05s}
+button:hover{border-color:var(--ink-2)}
+button:active{transform:translateY(1px)}
+button:disabled{cursor:not-allowed;color:var(--faint);background:var(--sunken);border-color:var(--line)}
+.sr-only,.skip:not(:focus){position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.skip:focus{position:fixed;top:12px;left:12px;z-index:50;padding:12px 16px;background:var(--surface);border-radius:8px}
+
+/* ---------- top bar ---------- */
+.topbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:saturate(1.6) blur(14px);-webkit-backdrop-filter:saturate(1.6) blur(14px);border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:1200px;margin:auto;padding:12px 32px;display:flex;align-items:center;gap:24px}
+.brand{display:flex;align-items:center;gap:11px;text-decoration:none;min-width:0}
+.project-mark{width:34px;height:34px;flex:none;display:grid;place-items:center;border-radius:9px;background:var(--ink);color:var(--bg)}
+.project-mark svg{width:18px;height:18px}
+.brand strong{font-size:14px;font-weight:700;letter-spacing:-.1px;line-height:1.2}
+.brand strong span{display:block;font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.2px}
+.tabs{display:flex;gap:2px;margin-left:auto;background:var(--sunken);padding:3px;border-radius:999px}
+.tabs a{font-size:13.5px;font-weight:600;color:var(--ink-2);text-decoration:none;padding:7px 14px;border-radius:999px;white-space:nowrap;transition:background .15s,color .15s}
+.tabs a:hover{color:var(--ink);background:color-mix(in srgb,var(--surface) 55%,transparent)}
+.tabs a[aria-current=page]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.edition{font-size:12px;color:var(--muted);border:1px solid var(--line-2);border-radius:999px;padding:4px 10px;white-space:nowrap}
+
+/* ---------- layout ---------- */
+main{max-width:1200px;margin:auto;padding:44px 32px 24px}
+.page-head{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:28px;margin-bottom:26px}
+.page-head.compact h1{font-size:clamp(28px,3.4vw,40px)}
+.page-head.compact .eyebrow{margin-bottom:10px}
+.view{animation:fade .22s ease}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.view>.panel:first-child{margin-top:0}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11.5px;letter-spacing:1.4px;font-weight:700;color:var(--accent);margin:0 0 14px;text-transform:uppercase}
+.eyebrow:before{content:"";width:18px;height:2px;background:var(--accent);border-radius:2px}
+h1{font-family:var(--serif);font-weight:600;font-size:clamp(34px,4.6vw,54px);line-height:1.04;letter-spacing:-1.2px;margin:0}
+.assumption-note{font-size:14.5px;color:var(--muted);margin:14px 0 0;max-width:620px}
+.jump{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;text-decoration:none;white-space:nowrap;background:var(--ink);color:var(--bg);padding:11px 18px;border-radius:999px}
+.jump:hover{opacity:.88}
+
+h2{font-size:21px;line-height:1.3;letter-spacing:-.3px;margin:0;font-weight:700}
+h3{font-size:20px;line-height:1.25;letter-spacing:-.3px;margin:0;font-weight:700}
+
+/* scenario bar */
+.scenario-bar{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:18px;padding:10px 10px 10px 18px;background:var(--surface);border:1px solid var(--line);border-radius:999px;box-shadow:var(--shadow)}
+.scenario-choice{display:flex;align-items:center;gap:14px}
+.small-label{font-size:13px;font-weight:600;color:var(--muted)}
+.segments{display:flex;background:var(--sunken);padding:3px;gap:2px;border-radius:999px}
+.segments button{background:transparent;border-color:transparent;min-width:96px;min-height:36px;color:var(--ink-2)}
+.segments button:hover{background:color-mix(in srgb,var(--surface) 60%,transparent)}
+.segments button[aria-pressed=true]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.scenario-actions{display:flex;align-items:center;gap:12px}
+#modified{font-size:12.5px;color:var(--muted);display:inline-flex;align-items:center;gap:7px}
+#modified:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--good)}
+#modified.edited:before{background:var(--warn)}
+
+/* decision note (inline) */
+#results{margin-top:30px}.results-head{align-items:flex-end}
+.decision-note{display:flex;align-items:flex-start;gap:8px;font-size:14px;color:var(--muted);margin:6px 0 0;line-height:1.45}
+.decision-note:before{content:"";flex:none;width:7px;height:7px;border-radius:50%;background:var(--good);margin-top:7px}
+.decision-note.caution{color:var(--warn);background:var(--warn-soft);padding:6px 12px;border-radius:999px;font-weight:600}
+.decision-note.caution:before{background:var(--warn)}
+.section-heading{display:flex;align-items:baseline;justify-content:space-between;gap:18px;margin-bottom:16px}
+.section-heading>span{font-size:13px;color:var(--muted);text-align:right}
+
+/* ---------- policy cards ---------- */
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.policy-card{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px 22px 18px;min-width:0;box-shadow:var(--shadow);display:flex;flex-direction:column}
+.policy-card.best{border-color:var(--good-line);box-shadow:0 0 0 1px var(--good-line),var(--shadow)}
+.card-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;min-height:22px}
+.policy-index{font-size:11px;font-weight:700;letter-spacing:1.2px;color:var(--muted);margin:0;text-transform:uppercase}
+.badge{font-size:11px;line-height:16px;font-weight:700;letter-spacing:.3px;padding:3px 9px;border-radius:999px;background:var(--good-soft);color:var(--good);white-space:nowrap}
+.policy-card h3{margin-bottom:18px}
+.cost-label{font-size:12.5px;color:var(--muted);margin:0 0 2px}
+.cost-number{font-size:clamp(30px,3.2vw,40px);line-height:1.15;font-weight:700;letter-spacing:-1.2px}
+.cost-number small{font-size:13px;font-weight:600;color:var(--muted);letter-spacing:0;margin-left:6px}
+.cost-bar{position:relative;height:8px;border-radius:99px;background:var(--sunken);margin:14px 0 12px;overflow:visible}
+.cost-bar i{position:absolute;inset:0 auto 0 0;border-radius:99px;background:var(--bar)}
+.cost-bar.saving i{background:var(--bar-good)}.cost-bar.cost i{background:var(--bar-bad)}
+.cost-bar b{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--ink);border-radius:2px;opacity:.55}
+.delta{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted);margin:0 0 16px;min-height:26px}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--sunken);color:var(--ink-2);white-space:nowrap}
+.pill.saving,.pill.ok{background:var(--good-soft);color:var(--good)}
+.pill.cost,.pill.bad{background:var(--bad-soft);color:var(--bad)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.ok:before,.pill.bad:before,.pill.warn:before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.card-metrics{margin:0 0 14px}
+.card-metrics>div{display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding:11px 0}
+.card-metrics dt{font-size:13.5px;color:var(--muted)}
+.card-metrics dd{font-size:15px;font-weight:650;margin:0;text-align:right}
+.card-metrics dd.big{font-size:20px;font-weight:700}
+.card-status{font-size:13.5px;line-height:1.45;color:var(--ink-2);border-radius:10px;padding:10px 12px;background:var(--surface-2);border:1px solid var(--line);margin:auto 0 0}
+.card-status.good{background:var(--good-soft);border-color:transparent;color:var(--good)}
+.card-status.bad{background:var(--bad-soft);border-color:transparent;color:var(--bad)}
+.block-note{font-size:13.5px;color:var(--muted);margin:16px 0 0;line-height:1.55}
+
+/* ---------- panels ---------- */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:28px;margin-top:20px;min-width:0;box-shadow:var(--shadow)}
+.panel>h2{margin-bottom:16px}
+.section-kicker{font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--faint);display:block;margin-bottom:6px}
+.grid-2{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:20px}
+.grid-2>.panel{margin-top:20px}
+
+/* tables */
+.table-scroll{overflow-x:auto;max-width:100%;margin:0 -4px;padding:0 4px}
+table{width:100%;border-collapse:separate;border-spacing:0;text-align:left}
+th,td{padding:13px 14px;vertical-align:middle;border-bottom:1px solid var(--line);font-size:14.5px}
+thead th{background:var(--surface-2);font-size:11.5px;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);font-weight:650;border-bottom:1px solid var(--line-2);white-space:nowrap}
+thead th:first-child{border-top-left-radius:10px}thead th:last-child{border-top-right-radius:10px}
+tbody tr:last-child>*{border-bottom:0}
+tbody tr:hover>*{background:var(--surface-2)}
+tbody th{font-weight:650}
+td.num,th.num{text-align:right;white-space:nowrap}
+.active-row>*{background:color-mix(in srgb,var(--good-soft) 60%,transparent)!important}
+.active-tag{display:inline-block;margin-left:8px;font-size:10.5px;font-weight:700;letter-spacing:.6px;color:var(--good);text-transform:uppercase;vertical-align:middle}
+.td-saving{color:var(--good);font-weight:650}.td-cost{color:var(--bad);font-weight:650}
+
+/* A2 auxiliary */
+.aux-layout{display:grid;grid-template-columns:280px minmax(0,1fr);gap:32px;align-items:start}
+.count-control{display:flex;flex-direction:column;gap:12px}
+.count-control .fields{grid-template-columns:1fr}
+.count-control input{font-size:28px!important;font-weight:700!important}
+.aux-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.stat{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:14px 16px;min-width:0}
+.stat span{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
+.stat strong{display:block;font-size:22px;letter-spacing:-.5px;line-height:1.25}
+.stat strong.saving{color:var(--good)}.stat strong.cost{color:var(--bad)}
+.meter{margin-top:14px;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.meter-head{display:flex;justify-content:space-between;gap:12px;font-size:13px;color:var(--muted);margin-bottom:10px}
+.meter-head strong{color:var(--ink);font-size:15px}
+.meter-track{position:relative;height:12px;border-radius:99px;background:var(--sunken);overflow:hidden}
+.meter-track i{position:absolute;inset:0 auto 0 0;border-radius:99px;background:var(--bar-good)}
+.meter-track.over i{background:repeating-linear-gradient(135deg,var(--bar-bad),var(--bar-bad) 6px,color-mix(in srgb,var(--bar-bad) 65%,white) 6px,color-mix(in srgb,var(--bar-bad) 65%,white) 10px)}
+.meter-axis{display:flex;justify-content:space-between;font-size:11px;color:var(--faint);margin-top:6px}
+.aux-text{font-size:13.5px;color:var(--muted);margin:12px 0 0}
+
+/* service list */
+.service-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:0;padding:0;list-style:none}
+.service-list li{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:16px 18px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);font-size:14.5px;color:var(--ink-2)}
+.service-list b{display:inline-block;font-size:12px;font-weight:700;color:var(--ink);background:var(--sunken);border-radius:999px;padding:3px 10px;text-align:center}
+
+/* details & callouts */
+.sub-details{border-top:1px solid var(--line);margin-top:22px}
+.sub-details>summary{cursor:pointer;font-weight:650;padding:16px 0 4px;font-size:15px}
+.summary-callout{font-size:14.5px;color:var(--ink-2);background:var(--surface-2);border:1px solid var(--line);border-left:3px solid var(--good);border-radius:10px;padding:12px 16px;margin:16px 0 18px}
+.select-field{margin:18px 0 16px;max-width:420px}
+.select-field select{width:100%}
+
+/* live summary on inputs page */
+.live-summary{position:sticky;top:72px;z-index:5;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:16px;padding:10px;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-radius:16px}
+.live-item{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px;box-shadow:var(--shadow);min-width:0}
+.live-item.best{border-color:var(--good-line)}
+.live-item small{display:block;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted)}
+.live-item strong{display:block;font-size:19px;letter-spacing:-.4px;line-height:1.25;white-space:nowrap}
+.live-item .pill{font-size:12px}
+
+/* pager */
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:28px}
+.pager a{display:flex;flex-direction:column;gap:2px;text-decoration:none;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 18px;min-width:200px;box-shadow:var(--shadow);transition:border-color .15s}
+.pager a:hover{border-color:var(--ink-2)}
+.pager a small{font-size:11.5px;color:var(--muted);font-weight:600}
+.pager a span{font-size:15px;font-weight:700}
+.pager a.next{margin-left:auto;text-align:right}
+
+/* inputs */
+.inputs-panel{padding:30px}
+.fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px 20px}
+fieldset{margin:26px 0 0;padding:22px 0 0;border:0;border-top:1px solid var(--line);min-width:0}
+.inputs-panel>fieldset:first-child{margin-top:0;padding-top:0;border-top:0}
+legend{font-weight:700;padding:0 14px 0 0;font-size:15px}
+legend span{font-weight:700;color:var(--accent)}
+.field{display:block;min-width:0}
+.field-name{display:block;font-size:13px;font-weight:550;color:var(--ink-2);min-height:20px;margin-bottom:6px;line-height:1.35}
+.input-wrap{display:flex;align-items:center;border:1px solid var(--line-2);border-radius:10px;background:var(--surface-2);min-width:0;transition:border-color .15s,box-shadow .15s}
+.input-wrap:hover{border-color:var(--faint)}
+.input-wrap:focus-within{border-color:var(--ink);box-shadow:0 0 0 3px color-mix(in srgb,var(--ink) 10%,transparent);background:var(--surface)}
+.input-wrap input{font-size:17px;font-weight:650;min-width:0;width:100%;border:0;border-radius:10px;background:transparent;padding:10px 12px;outline:0}
+.input-wrap span{font-size:11.5px;color:var(--muted);padding-right:12px;white-space:nowrap}
+.input-wrap:has(input[aria-invalid=true]){border-color:var(--bad);background:var(--bad-soft)}
+.field-error{font-size:12.5px;display:block;margin-top:6px;color:var(--bad)}
+#input-error{border:1px solid color-mix(in srgb,var(--bad) 40%,transparent);padding:16px 18px;background:var(--bad-soft);color:var(--bad);margin:0 0 20px;border-radius:12px;font-size:14.5px}
+select{padding:10px 12px;border:1px solid var(--line-2);border-radius:10px;max-width:100%;background:var(--surface-2);font-size:14.5px;margin-top:6px}
+#multi-select{display:block;margin-bottom:16px}
+.definitions dl{display:grid;grid-template-columns:1fr 1fr;gap:22px 40px;margin:0}
+.definitions dt{font-size:14px;font-weight:700;margin-bottom:6px}
+.definitions dd{font-size:14px;color:var(--muted);margin:0;line-height:1.6}
+
+footer{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px 18px;color:var(--muted);font-size:12px;padding:36px 0 12px;margin-top:28px;border-top:1px solid var(--line)}
+
+/* ---------- responsive ---------- */
+@media(max-width:1020px){.topbar-inner{flex-wrap:wrap;row-gap:10px}.tabs{order:3;width:100%;margin-left:0;overflow-x:auto;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}.tabs a{flex:1 0 auto;text-align:center}.edition{margin-left:auto}.live-summary{top:112px}.aux-layout{grid-template-columns:1fr}.fields{grid-template-columns:repeat(2,minmax(0,1fr))}.cards{grid-template-columns:1fr 1fr}.cards>.policy-card:last-child{grid-column:1/-1}}
+@media(max-width:720px){
+  .topbar-inner{padding:10px 16px;gap:12px}.edition{margin-left:auto;font-size:11px}
+  main{padding:28px 16px 16px}
+  .page-head{grid-template-columns:1fr;gap:16px}.jump{justify-self:start}
+  .live-summary{position:static;grid-template-columns:1fr;padding:0;background:none}
+  .pager a{min-width:0;flex:1}
+  .results-head{align-items:flex-start}
+  .scenario-bar{flex-direction:column;align-items:stretch;border-radius:var(--radius);padding:14px}
+  .scenario-choice{flex-direction:column;align-items:stretch;gap:8px}
+  .segments button{flex:1;min-width:0}
+  .scenario-actions{justify-content:space-between}
+  .decision-note{font-size:16px;padding:16px}
+  .cards{grid-template-columns:1fr}.cards>.policy-card:last-child{grid-column:auto}
+  .panel,.inputs-panel{padding:20px 16px}
+  .fields{grid-template-columns:1fr}
+  .aux-grid{grid-template-columns:1fr 1fr}.aux-grid .stat:first-child{grid-column:1/-1}
+  .definitions dl{grid-template-columns:1fr}
+  .section-heading{flex-direction:column;gap:4px}.section-heading>span{text-align:left}
+  .service-list{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+@media print{.topbar{position:static}.tabs,.pager,.jump,.scenario-actions{display:none}.view[hidden]{display:block!important}.panel,.policy-card{box-shadow:none}}
+</style>
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="topbar"><div class="topbar-inner"><a class="brand" href="#overview"><span class="project-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg></span><strong>Return Policy Decision Lab <span>UNIQLO case · ISEM2005</span></strong></a><nav class="tabs" aria-label="Pages"><a href="#overview" data-tab="overview">Overview</a><a href="#capacity" data-tab="capacity">A2 capacity</a><a href="#sensitivity" data-tab="sensitivity">Sensitivity</a><a href="#inputs" data-tab="inputs">Assumptions</a><a href="#method" data-tab="method">Method</a></nav><span class="edition">v30 · Offline</span></div></header>
+<main id="main" tabindex="-1">
+<div class="page-head" id="page-head"><div><p class="eyebrow" id="page-eyebrow">Mainland China / affected online returns</p><h1 id="page-title">Compare total costs and changes.</h1><p class="assumption-note" id="page-sub">Illustrative assumptions in HKD, not company observations. N does not determine customer adoption.</p></div><a class="jump" id="page-cta" href="#inputs">Adjust inputs <span aria-hidden="true">→</span></a></div>
+<section class="scenario-bar" aria-label="Handling scenario"><div class="scenario-choice"><span class="small-label">Handling scenario</span><div class="segments"><button data-scenario="base" aria-pressed="true">Base</button><button data-scenario="downside" aria-pressed="false">Downside</button><button data-scenario="upside" aria-pressed="false">Upside</button></div></div><div class="scenario-actions"><span id="modified">Default assumptions</span><button id="reset">Restore defaults</button></div></section>
+<div id="input-error" role="alert" hidden></div>
+
+<div class="view" data-view="overview">
+<section id="results" class="calculated"><div class="section-heading results-head"><div><h2>Three policies: total and change</h2><p id="decision-note" class="decision-note" role="status" aria-live="polite"></p></div><span id="horizon-label"></span></div><div id="cards" class="cards"></div><p class="block-note">Negative: fewer company resources. Positive: additional resources to assess against service goals and budget. Current = 0 is a relative baseline.</p></section>
+<section id="scenarios" class="panel calculated"><div class="section-heading"><div><span class="section-kicker">Scenario comparison</span><h2>Each handling scenario at its own capacity minimum</h2></div></div><div class="table-scroll"><table id="scenario-table" class="scenario-table"></table></div><p class="block-note">Whole-store rounding may leave a small margin. A monthly minimum is not an approved site list or a peak-shift guarantee.</p></section>
+<section class="panel"><span class="section-kicker">Beyond cost</span><h2>Service differences for managerial judgement</h2><ul class="service-list"><li><b>Current</b><span>Customer pays postage and arranges mailing.</span></li><li><b>A1</b><span>Company pays postage; customer still arranges mailing.</span></li><li><b>A2</b><span>Store users avoid mailing but may travel and wait; other returns remain direct-to-warehouse.</span></li></ul></section>
+</div>
+
+<div class="view" data-view="capacity" hidden>
+<section class="panel"><div class="section-heading"><h2>A2: inspect additional capacity margin</h2><span>Network limit 851</span></div><p class="block-note" style="margin-top:0;margin-bottom:20px">This count changes only the auxiliary calculation below. The main comparison always uses each scenario’s own minimum.</p><div class="aux-layout"><div class="count-control"><div id="count-input" class="fields"></div><button id="use-lower">Use active minimum</button></div><div id="aux-result" class="calculated"></div></div></section>
+</div>
+
+<div class="view" data-view="sensitivity" hidden>
+<section class="panel calculated"><div class="section-heading"><div><span class="section-kicker">Supporting analysis · 0–30% grid</span><h2>g sensitivity</h2></div></div><p class="block-note" style="margin-top:0">Each point changes only g, with all other active inputs fixed, and recalculates N. A positive cost difference does not mean capacity failure.</p><div id="g-summary" class="summary-callout"></div><div class="table-scroll"><table id="g-table"></table></div><details class="sub-details"><summary>Optional rule: cost no higher than Current</summary><div id="cost-rule" class="block-note"></div><p class="block-note">This additional cost rule is not a universal feasibility or approval decision. No overlap can still leave a capacity-passing option that needs more budget.</p></details></section>
+<section class="panel calculated"><div class="section-heading"><div><span class="section-kicker">Full comparison · one input at a time</span><h2>Multi-point sensitivity</h2></div></div><p class="block-note" style="margin-top:0">One test input changes at a time; other active inputs stay fixed and N is recalculated. Test values are illustrative comparison points, not company estimates. T changes the comparison period.</p><label class="field select-field" for="multi-select"><span class="field-name">Test input</span><select id="multi-select"></select></label><div class="table-scroll"><table id="multi-table"></table></div></section>
+</div>
+
+<div class="view" data-view="inputs" hidden>
+<div id="live-summary" class="live-summary calculated" aria-live="polite"></div>
+<section class="panel inputs-panel"><fieldset><legend>Demand and comparison period</legend><div id="demand-inputs" class="fields"></div></fieldset><fieldset><legend>Store work · <span id="case-label">Base</span></legend><div id="work-inputs" class="fields"></div></fieldset><fieldset><legend>Route resource costs · HKD</legend><div id="cost-inputs" class="fields"></div></fieldset><fieldset><legend>A1 postage, support and setup · HKD</legend><div id="postage-inputs" class="fields"></div></fieldset><fieldset><legend>A2 support and setup · HKD</legend><div id="store-cost-inputs" class="fields"></div></fieldset></section>
+</div>
+
+<div class="view" data-view="method" hidden>
+<section class="panel calculated"><div class="section-heading"><div><span class="section-kicker">Monthly components</span><h2>Cost calculation detail</h2></div></div><p class="block-note" style="margin-top:0;margin-bottom:16px">M is retained in absolute totals and cancels from the differences because it is identical across policies. Staff time is a resource value, not an incremental cash-payroll budget.</p><div class="table-scroll"><table id="detail-table"></table></div></section>
+<section class="panel definitions"><span class="section-kicker">Glossary</span><h2>Definitions</h2><dl><div><dt>Demand and routing</dt><dd>Current uses R0; A1 and A2 use R0(1+g). a is the A2 store-received share, independent of N. r is the final local-restock share of store receipts.</dd></div><div><dt>Capacity</dt><dd>h = h0 + r hL + (1−r) hP. A is staff minutes after existing duties and exception reserve. Group utilisation = k a R1 h / (N A); the default k = 2 is a concentration assumption, not a measured store maximum.</dd></div><div><dt>Route costs</dt><dd>cD covers variable direct warehouse processing. cT includes company-paid store-to-warehouse transport and variable warehouse processing. Both exclude store labour and M. cL is local non-labour cost.</dd></div><div><dt>Zero-work cases</dt><dd>No demand, no store receipts, zero modelled work or zero available capacity does not determine a primary minimum. The auxiliary count can still show fixed policy costs.</dd></div><div><dt>Scope</dt><dd>Warehouse capacity is assumed sufficient. A minimum above 851 is unavailable within the network, not clipped to 851. Customer convenience and refund waiting are not predicted by this cost model.</dd></div></dl></section>
+</div>
+
+<nav class="pager" id="pager" aria-label="Previous and next page"></nav>
+<footer><span>UNIQLO return-policy comparison · v30 · Student coursework, not affiliated with or endorsed by UNIQLO</span><span>Independent front-end calculation · no Excel connection</span></footer></main><noscript>Enable JavaScript to calculate the comparison.</noscript><script>
+/* Project-designed illustrative assumptions in HKD; not UNIQLO data.
+ * Percentage fields display 0–100; calculations use fractions. */
+(function (root) {
+  'use strict';
+  const config = {
+    version: 'v30', currency:'HKD', networkN:851,
+    defaults: {
+      shared: {R:12000,g:0,a:0.4,w:35,cD:9.4,cT:7,cL:0.6,Kc:1200,Ks:120,Fc:35000,Fs:1200,T:12,k:2,selectedN:24,warehouseFixed:17600,p:6,Kp:1200,Fp:35000},
+      scenarios: {
+        base:{r:0.5,h0:3,hL:2,hP:1,A:1800},
+        downside:{r:0.3,h0:4.5,hL:3,hP:2,A:1200},
+        upside:{r:0.7,h0:2,hL:1.5,hP:0.5,A:2400}
+      }
+    },
+    scenarioLabels:{base:'Base',downside:'Downside',upside:'Upside'},
+    policies:[{id:'current',name:'Current Policy',short:'Current',N:0},{id:'a1',name:'A1 Paid Return Postage',short:'A1',N:0},{id:'a2',name:'A2 Store Acceptance',short:'A2'}],
+    fields:[
+      {key:'R',scope:'shared',label:'Baseline eligible returns R0 / month',unit:'items',min:0,max:100000000,step:1,integer:true,source:'Inputs!B17'},
+      {key:'g',scope:'shared',label:'Policy-induced extra-return proportion g',unit:'% above R0',min:0,max:100,step:1,percent:true,source:'Inputs!B31'},
+      {key:'a',scope:'shared',label:'Store-return share a',unit:'%',min:0,max:100,step:1,percent:true,source:'Inputs!B18'},
+      {key:'selectedN',scope:'shared',label:'Manual A2 store count N',unit:'stores',min:1,max:851,step:1,integer:true,source:'Inputs!B29'},
+      {key:'warehouseFixed',scope:'shared',label:'Warehouse fixed cost M',unit:'HKD / month · fixed',min:0,max:1000000000,step:1000,source:'Inputs!B32'},
+      {key:'r',scope:'scenario',label:'Final local-restock share r',unit:'% of store receipts',min:0,max:100,step:1,percent:true,source:'Inputs!C6:E6'},
+      {key:'A',scope:'scenario',label:'Available staff minutes A',unit:'min / store / month',min:0,max:10000000,step:60,source:'Inputs!C10:E10'},
+      {key:'h0',scope:'scenario',label:'Receipt and inspection minutes h0',unit:'min / store item',min:0,max:100000,step:0.1,source:'Inputs!C7:E7'},
+      {key:'hL',scope:'scenario',label:'Additional local-restock minutes hL',unit:'min / local item',min:0,max:100000,step:0.1,source:'Inputs!C8:E8'},
+      {key:'hP',scope:'scenario',label:'Additional packing and dispatch minutes hP',unit:'min / transferred item',min:0,max:100000,step:0.1,source:'Inputs!C9:E9'},
+      {key:'w',scope:'shared',label:'Staff time resource rate w',unit:'HKD / staff-hour',min:0,max:1000000,step:1,source:'Inputs!B19'},
+      {key:'cD',scope:'shared',label:'Direct warehouse variable cost cD',unit:'HKD / item',min:0,max:1000000,step:0.1,source:'Inputs!B20'},
+      {key:'cT',scope:'shared',label:'Store-to-warehouse variable cost cT',unit:'HKD / transfer item',min:0,max:1000000,step:0.1,source:'Inputs!B21'},
+      {key:'cL',scope:'shared',label:'Local non-labour cost cL',unit:'HKD / local item',min:0,max:1000000,step:0.1,source:'Inputs!B22'},
+      {key:'Kc',scope:'shared',label:'Central monthly support Kc',unit:'HKD / month',min:0,max:100000000,step:100,source:'Inputs!B23'},
+      {key:'Ks',scope:'shared',label:'Monthly support per store Ks',unit:'HKD / store / month',min:0,max:10000000,step:10,source:'Inputs!B24'},
+      {key:'Fc',scope:'shared',label:'Central setup cost Fc',unit:'HKD once',min:0,max:1000000000,step:1000,source:'Inputs!B25'},
+      {key:'Fs',scope:'shared',label:'Setup cost per store Fs',unit:'HKD / store once',min:0,max:100000000,step:100,source:'Inputs!B26'},
+      {key:'T',scope:'shared',label:'Comparison period T',unit:'months',min:1,max:1200,step:1,integer:true,source:'Inputs!B27'},
+      {key:'k',scope:'shared',label:'High-return group multiplier k',unit:'× pooled utilisation',min:1,max:1000,step:0.1,source:'Inputs!B28'},
+      {key:'p',scope:'shared',label:'A1 company-paid return postage p',unit:'HKD / item',min:0,max:1000000000,step:0.1,source:'Inputs!B33'},
+      {key:'Kp',scope:'shared',label:'A1 monthly support Kp',unit:'HKD / month',min:0,max:1000000000,step:100,source:'Inputs!B34'},
+      {key:'Fp',scope:'shared',label:'A1 setup cost Fp',unit:'HKD once',min:0,max:1000000000,step:1000,source:'Inputs!B35'}
+    ]
+  };
+  const s=config.defaults.shared,c=config.defaults.scenarios.base;
+  s.selectedN=Math.max(1,Math.ceil(s.k*s.a*s.R*(1+s.g)*(c.h0+c.r*c.hL+(1-c.r)*c.hP)/c.A-1e-10));
+  root.UniqloConfig = config;
+  if(typeof module !== 'undefined' && module.exports) module.exports = config;
+})(typeof globalThis !== 'undefined' ? globalThis : this);
+
+/* v30: capacity minimum first; cost differences and capacity status are separate. */
+(function(root){
+ 'use strict';
+ const ceil=x=>Math.ceil(x-1e-10),floor=x=>Math.floor(x+1e-10);
+ function validate(state,config){const errors=[];for(const f of config.fields){for(const [scope,s] of f.scope==='shared'?[['shared',state.shared]]:Object.entries(state.scenarios)){const v=s?.[f.key],shown=f.percent?v*100:v;if(typeof v!=='number'||!Number.isFinite(v)||shown<f.min||shown>f.max||(f.integer&&!Number.isInteger(v)))errors.push({scope,key:f.key,label:f.label});}}return errors;}
+ function unit(s,c){const h=c.h0+c.r*c.hL+(1-c.r)*c.hP,b=h*s.w/60+c.r*s.cL+(1-c.r)*s.cT;return {h,b,v:(1-s.a)*s.cD+s.a*b};}
+ function minimum(s,c){const {h}=unit(s,c);if(s.R===0)return {N:null,required:null,status:'noDemand'};if(s.a===0)return {N:null,required:null,status:'noReceipts'};if(h===0)return {N:null,required:null,status:'noWork'};if(c.A===0)return {N:null,required:null,status:'noCapacity'};const required=Math.max(1,ceil(s.k*s.a*s.R*(1+s.g)*h/c.A));return {N:required<=851?required:null,required,status:required<=851?'pass':'outsideNetwork'};}
+ function bounds(s,c){const u=unit(s,c),m=minimum(s,c),perStore=s.T*s.Ks+s.Fs,headroom=s.T*s.R*(s.cD-(1+s.g)*u.v)-s.T*s.Kc-s.Fc;const rawMax=perStore>0?floor(headroom/perStore):headroom>=-1e-7?Infinity:-Infinity;const upper=Math.min(851,rawMax);return {...m,lower:m.required,upper,rawMax,perStore,headroom,feasible:m.N!==null&&m.N<=upper,assessed:m.N!==null};}
+ function calculate(s,c,policy,Noverride){
+  if(!['current','a1','a2'].includes(policy))throw new RangeError('Unknown policy');
+  const enabled=policy==='a2',N=enabled?(Noverride??s.selectedN):0;if(enabled&&(!Number.isInteger(N)||N<1||N>851))throw new RangeError('N must be an integer from 1 to 851');
+  const a=enabled?s.a:0,g=policy==='current'?0:s.g,volume=s.R*(1+g),{h,b}=unit(s,c);
+  const receipts=a*volume,direct=(1-a)*volume,local=receipts*c.r,transfer=receipts-local,labour=receipts*h/60,capacity=N*c.A/60;
+  const pooled=!enabled||labour===0?null:capacity>0?labour/capacity:Infinity,high=pooled===null?null:s.k*pooled;
+  const status=!enabled?(policy==='current'?'benchmark':'noStoreWork'):volume===0?'noDemand':receipts===0?'noReceipts':h===0?'noWork':c.A===0?'noCapacity':high>1+1e-12?'overload':'pass';
+  const parts={direct:direct*s.cD,labour:labour*s.w,local:local*s.cL,transfer:transfer*s.cT,warehouseFixed:s.warehouseFixed,postage:policy==='a1'?volume*s.p:0,support:enabled?s.Kc+N*s.Ks:policy==='a1'?s.Kp:0};
+  const monthly=Object.values(parts).reduce((x,y)=>x+y,0),setup=enabled?s.Fc+N*s.Fs:policy==='a1'?s.Fp:0,total=s.T*monthly+setup;
+  const delta=policy==='current'?0:policy==='a1'?s.T*s.R*(g*s.cD+(1+g)*s.p)+s.T*s.Kp+s.Fp:-s.T*a*s.R*(s.cD-b)+s.T*g*s.R*((1-a)*s.cD+a*b)+(s.T*s.Kc+s.Fc)+N*(s.T*s.Ks+s.Fs);
+  return {policy,N,a,g,volume,h,b,receipts,direct,local,transfer,warehouse:direct+transfer,labour,capacity,pooled,high,status,parts,monthly,setup,total,delta,firstYear:12*monthly+setup,flowBalance:direct+local+transfer-volume,reconciliation:total-s.T*(s.R*s.cD+s.warehouseFixed)-delta};
+ }
+ function compare(state,scenario){const s=state.shared,c=state.scenarios[scenario],m=minimum(s,c);return [calculate(s,c,'current'),calculate(s,c,'a1'),m.N!==null?calculate(s,c,'a2',m.N):{policy:'a2',N:null,requiredN:m.required,delta:null,status:m.status}];}
+ function sensitivity(s,c){const out=[];for(let i=0;i<=300;i++){const g=i/1000,x={...s,g},m=minimum(x,c),r=m.N===null?null:calculate(x,c,'a2',m.N),current=calculate(x,c,'current'),post=calculate(x,c,'a1');out.push({g,N:m.N,requiredN:m.required,currentTotal:current.total,a1Total:post.total,a1Delta:post.delta,a2Total:r?.total??null,a2Delta:r?.delta??null,high:r?.high??null,status:m.status,noIncrease:r!==null&&r.delta<=1e-7});}return out;}
+ const multiSpecs=[
+ {key:'cD',label:'Direct warehouse variable cost cD',values:[7.52,8.38,8.4,9.4,11.28]},
+ {key:'cT',label:'Store-to-warehouse variable cost cT',values:[5.6,7,8.4,9.03,9.1]},
+ {key:'w',label:'Staff time resource rate w',values:[28,35,42,48.5,48.6,50]},
+ {key:'h0',label:'Receipt and inspection minutes h0',values:[2.4,3,3.6,4.15,4.194047619047619,4.2]},
+ {key:'g',label:'Policy-induced extra-return proportion g',values:[0,.02,.04,.045,.046,.05]},
+ {key:'r',label:'Final local-restock share r',values:[.3,.4,.5,.6,.7]},
+ {key:'R',label:'Baseline eligible returns R0 / month',values:[6000,9000,12000,18000,24000]},
+ {key:'a',label:'Store-return share a',values:[.2,.3,.4,.5,.6]},
+ {key:'A',label:'Available staff minutes A',values:[939,939.1304347826087,940,1440,1800,2160]},
+ {key:'k',label:'High-return group multiplier k',values:[1.6,2,2.4,3.8,3.8333333333333335,3.85]},
+ {key:'hL',label:'Additional local-restock minutes hL',values:[1.6,2,2.4]},
+ {key:'hP',label:'Additional packing and dispatch minutes hP',values:[.8,1,1.2]},
+ {key:'cL',label:'Local non-labour cost cL',values:[.48,.6,.72]},
+ {key:'Kc',label:'Central monthly support Kc',values:[960,1200,1440]},
+ {key:'Ks',label:'Monthly support per store Ks',values:[96,120,144]},
+ {key:'Fc',label:'Central setup cost Fc',values:[28000,35000,42000]},
+ {key:'Fs',label:'Setup cost per store Fs',values:[960,1200,1440]},
+ {key:'warehouseFixed',label:'Warehouse fixed cost M',values:[14080,17600,21120]},
+ {key:'p',label:'A1 company-paid return postage p',values:[4.8,6,7.2]},
+ {key:'Kp',label:'A1 monthly support Kp',values:[960,1200,1440]},
+ {key:'Fp',label:'A1 setup cost Fp',values:[28000,35000,42000]},
+ {key:'T',label:'Comparison period T',values:[6,12,24,36]}
+ ];
+ function multiPoint(s,c,key,value,config){const f=config.fields.find(f=>f.key===key);if(!f||key==='selectedN')throw new RangeError('Unknown sensitivity input');const x={...s},y={...c};(f.scope==='shared'?x:y)[key]=value;if(validate({shared:x,scenarios:{point:y}},config).length)return {key,value,N:null,requiredN:null,status:'invalidPoint',currentTotal:null,a1Total:null,a1Delta:null,a2Total:null,a2Delta:null,high:null};const m=minimum(x,y),current=calculate(x,y,'current'),a1=calculate(x,y,'a1'),a2=m.N===null?null:calculate(x,y,'a2',m.N);return {key,value,N:m.N,requiredN:m.required,status:m.status,currentTotal:current.total,a1Total:a1.total,a1Delta:a1.delta,a2Total:a2?.total??null,a2Delta:a2?.delta??null,high:a2?.high??null,h:unit(x,y).h,b:unit(x,y).b,R1:x.R*(1+x.g),T:x.T};}
+ function multi(s,c,key,config){const spec=multiSpecs.find(z=>z.key===key);if(!spec)throw new RangeError('Unknown sensitivity input');return spec.values.map(value=>multiPoint(s,c,key,value,config));}
+ const messages={benchmark:'Comparison baseline',noStoreWork:'No store work',pass:'Passes monthly capacity',overload:'Above monthly capacity',noDemand:'No baseline demand: minimum not assessed',noReceipts:'No store receipts: minimum not assessed',noWork:'No modelled staff work: count not determined',noCapacity:'No staff capacity: minimum unavailable',outsideNetwork:'Required store count exceeds 851'};
+ const api={validate,unit,minimum,bounds,calculate,compare,sensitivity,multiSpecs,multiPoint,multi,messages,clone:x=>JSON.parse(JSON.stringify(x))};root.UniqloModel=api;if(typeof module!=='undefined'&&module.exports)module.exports=api;
+})(typeof globalThis!=='undefined'?globalThis:this);
+
+(function(){'use strict';
+ const C=window.UniqloConfig,M=window.UniqloModel,$=id=>document.getElementById(id),invalid=new Map();let state=M.clone(C.defaults),active='base';
+ const money=n=>new Intl.NumberFormat('en-GB',{maximumFractionDigits:2}).format(n),num=n=>new Intl.NumberFormat('en-GB',{maximumFractionDigits:2}).format(n),pct=n=>n===null||!Number.isFinite(n)?'N/A':num(n*100)+'%',delta=n=>n===null?'Unavailable':(Math.abs(n)<1e-7?'0':(n>0?'+':'−')+money(Math.abs(n))),msg=x=>M.messages[x]||x;
+ const dcls=n=>n===null||n===undefined||Math.abs(n)<1e-7?'':n>0?'cost':'saving';
+ const scls=x=>x==='pass'?'ok':x==='benchmark'||x==='noStoreWork'?'':'bad';
+ const spill=x=>`<span class="pill ${scls(x)}">${msg(x)}</span>`;
+ const action={noDemand:'Enter a positive baseline volume to size A2.',noReceipts:'Set a positive store-return share to size A2.',noWork:'Enter task minutes before sizing stores.',noCapacity:'Enter available staff minutes or retain Current.',outsideNetwork:'Review demand, adoption or staff time; do not cap the count at 851.'};
+ const groups={'count-input':['selectedN'],'demand-inputs':['R','g','a','T','k'],'work-inputs':['r','A','h0','hL','hP'],'cost-inputs':['w','cD','cT','cL','warehouseFixed'],'postage-inputs':['p','Kp','Fp'],'store-cost-inputs':['Kc','Ks','Fc','Fs']};
+ for(const [id,keys]of Object.entries(groups))$(id).innerHTML=keys.map(k=>{const f=C.fields.find(f=>f.key===k);return `<label class="field" for="input-${k}"><span class="field-name">${f.label}</span><span class="input-wrap"><input id="input-${k}" name="${k}" type="number" inputmode="decimal" min="${f.min}" max="${f.max}" step="${f.integer?1:'any'}" aria-describedby="error-${k}"><span>${f.unit}</span></span><span id="error-${k}" class="field-error" hidden></span></label>`;}).join('');
+ $('multi-select').innerHTML=M.multiSpecs.map(x=>`<option value="${x.key}">${x.label}</option>`).join('');$('multi-select').addEventListener('change',()=>render());
+ const target=f=>f.scope==='shared'?state.shared:state.scenarios[active],key=f=>(f.scope==='shared'?'shared':active)+'.'+f.key;
+ function sync(){for(const f of C.fields){const bad=invalid.get(key(f)),i=$('input-'+f.key);i.value=bad?.raw??String(Number((target(f)[f.key]*(f.percent?100:1)).toFixed(10)));i.setAttribute('aria-invalid',bad?'true':'false');$('error-'+f.key).hidden=!bad;$('error-'+f.key).textContent=bad?.message??'';}}
+ document.querySelectorAll('.field input').forEach(i=>i.addEventListener('input',()=>{const f=C.fields.find(f=>f.key===i.name),v=Number(i.value),ok=i.value.trim()!==''&&Number.isFinite(v)&&v>=f.min&&v<=f.max&&(!f.integer||Number.isInteger(v));if(ok){invalid.delete(key(f));target(f)[f.key]=f.percent?v/100:v;}else invalid.set(key(f),{raw:i.value,message:`Enter ${f.integer?'a whole number':'a number'} from ${f.min} to ${f.max}.`});i.setAttribute('aria-invalid',ok?'false':'true');$('error-'+f.key).hidden=ok;$('error-'+f.key).textContent=invalid.get(key(f))?.message??'';render();}));
+ document.querySelectorAll('[data-scenario]').forEach(b=>b.addEventListener('click',()=>{active=b.dataset.scenario;sync();render();}));$('reset').addEventListener('click',()=>{state=M.clone(C.defaults);active='base';invalid.clear();sync();render();});$('use-lower').addEventListener('click',()=>{const m=M.minimum(state.shared,state.scenarios[active]);if(m.N!==null){state.shared.selectedN=m.N;invalid.delete('shared.selectedN');sync();render();}});
+
+ const views=[
+  {id:'overview',tab:'Overview',eyebrow:'Mainland China / affected online returns',title:'Compare total costs and changes.',sub:'Illustrative assumptions in HKD, not company observations. N does not determine customer adoption.',cta:['#inputs','Adjust inputs']},
+  {id:'capacity',tab:'A2 capacity',eyebrow:'Auxiliary view',title:'Test a manual A2 store count.',sub:'The main comparison always uses each scenario’s own minimum.',cta:['#overview','Back to overview']},
+  {id:'sensitivity',tab:'Sensitivity',eyebrow:'Supporting analysis',title:'How results move when one input changes.',sub:'Other active inputs stay fixed and N is recalculated at every point.',cta:null},
+  {id:'inputs',tab:'Assumptions',eyebrow:'Inputs',title:'Adjust assumptions.',sub:'Illustrative assumptions in HKD, not company observations. Results recalculate as you type.',cta:['#overview','See results']},
+  {id:'method',tab:'Method',eyebrow:'Method',title:'How the totals are built.',sub:'Monthly cost components and the definitions behind them.',cta:null}];
+ const alias={results:'overview',scenarios:'overview',top:'overview',main:'overview'};
+ let currentView=null;
+ function route(){const h=location.hash.slice(1),id=views.some(v=>v.id===h)?h:(alias[h]||'overview'),v=views.find(x=>x.id===id),i=views.indexOf(v);
+  document.querySelectorAll('.view').forEach(e=>e.hidden=e.dataset.view!==id);
+  document.querySelectorAll('[data-tab]').forEach(a=>{if(a.dataset.tab===id)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
+  const tabs=document.querySelector('.tabs'),cur=tabs.querySelector('[aria-current=page]');if(cur&&tabs.scrollWidth>tabs.clientWidth)tabs.scrollLeft=cur.offsetLeft-(tabs.clientWidth-cur.offsetWidth)/2;
+  $('page-head').classList.toggle('compact',id!=='overview');$('page-eyebrow').textContent=v.eyebrow;$('page-title').textContent=v.title;$('page-sub').textContent=v.sub;
+  const cta=$('page-cta');cta.hidden=!v.cta;if(v.cta){cta.href=v.cta[0];cta.firstChild.textContent=v.cta[1]+' ';}
+  const prev=views[i-1],next=views[i+1];$('pager').innerHTML=(prev?`<a class="prev" href="#${prev.id}"><small>← Previous</small><span>${prev.tab}</span></a>`:'')+(next?`<a class="next" href="#${next.id}"><small>Next →</small><span>${next.tab}</span></a>`:'');
+  document.title=(id==='overview'?'':v.tab+' · ')+'UNIQLO Decision Lab · v30';
+  if(currentView!==null&&currentView!==id)window.scrollTo(0,0);currentView=id;}
+ window.addEventListener('hashchange',route);
+ function render(){
+  const errors=[...invalid.keys(),...M.validate(state,C).map(x=>x.scope+'.'+x.key)];$('input-error').hidden=!errors.length;$('input-error').textContent=errors.length?'Correct: '+[...new Set(errors)].map(k=>{const [scope,key]=k.split('.');return (scope==='shared'?'':C.scenarioLabels[scope]+': ')+(C.fields.find(f=>f.key===key)?.label||key);}).join('; ')+'.':'';document.querySelectorAll('.calculated').forEach(e=>e.hidden=!!errors.length);$('use-lower').disabled=!!errors.length;
+  const isDefault=JSON.stringify(state)===JSON.stringify(C.defaults)&&!errors.length;$('modified').textContent=isDefault?'Default assumptions':'Edited assumptions';$('modified').classList.toggle('edited',!isDefault);$('case-label').textContent=C.scenarioLabels[active];document.querySelectorAll('[data-scenario]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.scenario===active)));if(errors.length)return;
+  const s=state.shared,c=state.scenarios[active],min=M.minimum(s,c),rows=M.compare(state,active);$('use-lower').disabled=min.N===null;$('horizon-label').textContent=s.T===12?'First-year resource costs · HKD':s.T+'-month resource costs · HKD';
+  $('decision-note').className='decision-note'+(min.N===null?' caution':'');
+  $('decision-note').textContent=min.N===null?msg(min.status)+(min.required!==null?' (required '+min.required+' stores).':'.'):`A2 needs at least ${min.N} stores under ${C.scenarioLabels[active]} assumptions. ${Math.abs(rows[2].high-1)<1e-10?'The high-return group has no monthly buffer.':'Check candidate stores and peak shifts separately.'}`;
+  const totals=rows.map(r=>r.total).filter(x=>typeof x==='number'&&Number.isFinite(x)),maxT=Math.max(...totals,1),minT=Math.min(...totals),bestIdx=rows.findIndex(r=>r.total===minT&&r.delta<-1e-7),w=x=>Math.max(0,Math.min(100,x/maxT*100)).toFixed(2)+'%';
+  $('cards').innerHTML=rows.map((r,i)=>{const has=typeof r.total==='number';return `<article class="policy-card${i===bestIdx?' best':''}" data-policy="${r.policy}" data-delta="${r.delta??''}" data-total="${r.total??''}"><div class="card-top"><p class="policy-index">${i===0?'Benchmark':'Alternative '+(i===1?'A1':'A2')}</p>${i===bestIdx?'<span class="badge">Lowest total</span>':''}</div><h3>${C.policies[i].name}</h3><p class="cost-label">Calculated resource cost · HKD</p><div class="cost-number">${has?money(r.total):'Unavailable'}</div><div class="cost-bar ${dcls(r.delta)}" aria-hidden="true">${has?`<i style="width:${w(r.total)}"></i>`:''}${i>0?`<b style="left:${w(rows[0].total)}" title="Current"></b>`:''}</div><div class="delta">vs Current <span class="pill ${dcls(r.delta)}">${delta(r.delta)}</span>${i===0?' baseline':''}</div><dl class="card-metrics"><div><dt>Participating stores N</dt><dd class="big">${r.N??'Unavailable'}</dd></div><div><dt>Monthly capacity screening</dt><dd>${spill(r.status)}</dd></div></dl><p class="card-status ${i===0?'':r.delta===null?'bad':r.delta< -1e-7?'good':''}">${i===0?'Relative baseline; actual cost is not zero.':r.delta===null?action[r.status]:r.delta>1e-7?'Additional resources; assess service value and budget.':r.delta< -1e-7?'Fewer resources under these assumptions.':'Same resources as Current under these assumptions.'}</p></article>`;}).join('');
+  $('scenario-table').innerHTML='<caption class="sr-only">Resource costs at each handling scenario minimum</caption><thead><tr><th>Handling scenario</th><th>Policy</th><th class="num">N</th><th class="num">Calculated total · HKD</th><th class="num">Cost difference · HKD</th><th>Monthly capacity screening</th></tr></thead><tbody>'+`<tr><th>All handling scenarios</th><td>Current</td><td class="num">0</td><td class="num">${money(rows[0].total)}</td><td class="num">0</td><td><span class="pill">Baseline</span></td></tr><tr><th>All handling scenarios</th><td>A1</td><td class="num">0</td><td class="num">${money(rows[1].total)}</td><td class="num td-${dcls(rows[1].delta)}">${delta(rows[1].delta)}</td><td><span class="pill">No store work</span></td></tr>`+Object.keys(C.scenarioLabels).map(id=>{const r=M.compare(state,id)[2];return `<tr data-scenario-row="${id}"${id===active?' class="active-row"':''}><th>${C.scenarioLabels[id]}${id===active?'<span class="active-tag">Active</span>':''}</th><td>A2</td><td class="num">${r.N??(r.requiredN!==null?r.requiredN+' required':'N/A')}</td><td class="num">${r.total===undefined?'Unavailable':money(r.total)}</td><td class="num td-${dcls(r.delta)}">${delta(r.delta)}</td><td><span class="pill ${scls(r.status)}">${msg(r.status)}${r.high!==undefined?' · '+pct(r.high):''}</span></td></tr>`;}).join('')+'</tbody>';
+  $('live-summary').innerHTML=rows.map((r,i)=>`<div class="live-item${i===bestIdx?' best':''}"><div><small>${C.policies[i].short}${i===2&&r.N!==null?' · N '+r.N:''}</small><strong>${typeof r.total==='number'?money(r.total):'Unavailable'}</strong></div><span class="pill ${dcls(r.delta)}">${i===0?'Baseline':delta(r.delta)}</span></div>`).join('');
+  const aux=M.calculate(s,c,'a2',s.selectedN),hi=aux.high,over=hi!==null&&hi>1+1e-12,fill=hi===null||!Number.isFinite(hi)?100:Math.min(100,hi*100);
+  $('aux-result').innerHTML=`<div class="aux-grid"><div class="stat"><span>Manual stores</span><strong>${aux.N}</strong></div><div class="stat"><span>Total · HKD</span><strong>${money(aux.total)}</strong></div><div class="stat"><span>Change vs Current</span><strong class="${dcls(aux.delta)}">${delta(aux.delta)}</strong></div></div><div class="meter"><div class="meter-head"><span>High-return group utilisation</span><strong>${pct(hi)}</strong></div><div class="meter-track${over?' over':''}"><i style="width:${fill.toFixed(2)}%"></i></div><div class="meter-axis"><span>0%</span><span>100% monthly capacity</span></div></div><p class="aux-text">${spill(aux.status)} ${aux.status==='pass'?'Monthly unused group share: '+pct(Math.max(0,1-hi))+'.':''}</p>`;
+  const scan=M.sensitivity(s,c),ok=scan.filter(x=>x.noIncrease);$('g-summary').textContent=ok.length?`On the 0–30% grid (step 0.1 percentage point), ${ok.length} points have an in-network monthly-capacity minimum that costs no more than Current; highest such g: ${pct(ok.at(-1).g)}.`:'No point on the 0–30% grid meets both the network/monthly-capacity and no-cost-increase reference conditions.';
+  const activePoint=Math.round(s.g*1000);const points=scan.filter((x,i)=>i%10===0||Math.abs(i-activePoint)<1||i>0&&x.noIncrease!==scan[i-1].noIncrease||i<300&&x.noIncrease!==scan[i+1].noIncrease);
+  $('g-table').innerHTML='<thead><tr><th>g</th><th class="num">A2 minimum stores N_min</th><th class="num">A1 Δ HKD</th><th class="num">A2 Δ HKD</th><th>Monthly capacity screening</th><th>Cost ≤ Current</th></tr></thead><tbody>'+points.map(x=>`<tr${Math.round(x.g*1000)===activePoint?' class="active-row"':''}><td>${pct(x.g)}</td><td class="num">${x.N??(x.requiredN!==null?x.requiredN+' required':'N/A')}</td><td class="num td-${dcls(x.a1Delta)}">${delta(x.a1Delta)}</td><td class="num td-${dcls(x.a2Delta)}">${delta(x.a2Delta)}</td><td>${spill(x.status)}</td><td>${x.noIncrease?'<span class="pill ok">Yes</span>':x.a2Delta===null?'N/A':'<span class="pill">No</span>'}</td></tr>`).join('')+'</tbody>';
+  const b=M.bounds(s,c);$('cost-rule').textContent=b.feasible?`With the extra no-cost-increase rule, the count interval is ${b.lower}–${b.upper}.`:b.N===null?msg(b.status)+'.':`No overlap: capacity minimum ${b.lower}; cost maximum ${Number.isFinite(b.rawMax)?b.rawMax:b.rawMax>0?'unbounded':'none'} (network cap 851). This is a cost rule result, not a capacity failure.`;
+  const mk=$('multi-select').value, mf=C.fields.find(f=>f.key===mk),multiRows=M.multi(s,c,mk,C),mt=x=>x===null?'Unavailable':money(x);
+  $('multi-table').innerHTML='<thead><tr><th>Test value</th><th class="num">A2 minimum stores N_min</th><th class="num">Current total</th><th class="num">A1 total</th><th class="num">A1 Δ</th><th class="num">A2 total</th><th class="num">A2 Δ</th><th>Monthly capacity screening</th></tr></thead><tbody>'+multiRows.map(x=>`<tr><td>${mf.percent?pct(x.value):num(x.value)} ${mf.percent?'':mf.unit}</td><td class="num">${x.N??(x.requiredN!==null?x.requiredN+' required':'N/A')}</td><td class="num">${mt(x.currentTotal)}</td><td class="num">${mt(x.a1Total)}</td><td class="num td-${dcls(x.a1Delta)}">${delta(x.a1Delta)}</td><td class="num">${mt(x.a2Total)}</td><td class="num td-${dcls(x.a2Delta)}">${delta(x.a2Delta)}</td><td>${spill(x.status)}</td></tr>`).join('')+'</tbody>';
+  const parts=['direct','postage','labour','local','transfer','warehouseFixed','support'],detail=[rows[0],rows[1],min.N===null?null:rows[2]],labels={direct:'Direct warehouse variable cost cD',postage:'A1 company-paid return postage p',labour:'Staff time resource cost',local:'Local non-labour cost cL',transfer:'Store-to-warehouse variable cost cT',warehouseFixed:'Warehouse fixed cost M',support:'Policy support'};
+  $('detail-table').innerHTML='<thead><tr><th>Monthly cost component · HKD</th><th class="num">Current</th><th class="num">A1</th><th class="num">A2 at minimum</th></tr></thead><tbody>'+parts.map(k=>'<tr><th>'+labels[k]+'</th>'+detail.map(r=>'<td class="num">'+(r?money(r.parts[k]):'Unavailable')+'</td>').join('')+'</tr>').join('')+['setup','total'].map(k=>'<tr><th>'+(k==='setup'?'One-off setup':'Absolute '+s.T+'-month total')+'</th>'+detail.map(r=>'<td class="num">'+(r?money(r[k]):'Unavailable')+'</td>').join('')+'</tr>').join('')+'</tbody>';
+ }
+ sync();render();route();
+})();
+
+</script>
+</body></html>
